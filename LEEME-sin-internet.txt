@@ -1,0 +1,21 @@
+DEL MODELO A LA CONFIANZA · explain.la 2026
+Cómo presentar sin internet
+============================================
+
+1. Copia toda esta carpeta (no solo index.html) al computador del evento.
+   Las carpetas assets/ y assets/fonts/ deben quedar junto a index.html.
+
+2. Abre index.html con Google Chrome o Microsoft Edge
+   (clic derecho > Abrir con > Chrome).
+
+3. Haz un clic en la página y presiona F para pantalla completa.
+
+Controles
+- Clicker, flecha derecha o Av Pág: avanzar
+- Flecha izquierda o Re Pág: retroceder
+- Inicio: volver a la primera slide
+- B: pantalla negra (otra tecla para volver)
+- F: entrar o salir de pantalla completa
+
+Todo funciona sin conexión: tipografías, animaciones y los 5 videos.
+El deck siempre abre en la slide 1.

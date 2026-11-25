@@ -19,13 +19,14 @@ Una charla no técnica para empresas, sector público y cualquier persona que us
 - **→ / ← / Av Pág / Re Pág / clicker**: avanzar y retroceder. Algunas slides revelan su contenido paso a paso.
 - **F**: pantalla completa · **B**: pantalla negra · **Inicio / Fin**: primera y última slide · **número + pausa**: ir a esa slide.
 
-Para presentar sin internet, descarga el repositorio y abre `index.html`. Solo las fuentes se cargan desde Google Fonts.
+**Funciona 100% sin internet:** las tipografías, las animaciones y los videos están dentro de la carpeta. Descarga el repositorio (Code → Download ZIP), descomprímelo y abre `index.html` en Chrome o Edge. Las instrucciones están en `LEEME-sin-internet.txt`.
 
 ## Archivos
 
 - `index.html`: la presentación completa, lista para abrir o publicar.
 - `deck.html`: el mismo contenido sin el encabezado HTML. Si lo editas, ejecuta `./build.sh` para regenerar `index.html`.
 - `assets/`: videos de las demos, capturas y la foto de la presentadora.
+- `assets/fonts/`: Google Sans y Roboto Mono en local, para presentar sin conexión.
 
 ## Créditos
 

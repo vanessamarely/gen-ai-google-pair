@@ -814,13 +814,14 @@ mark.sand { color: var(--terra); }
 </div>
 <p class="pageno" id="pageno" style="position:fixed;"></p>
 <div class="hud" id="hud">
+  <button type="button" id="b-home" aria-label="Ir a la primera slide">Inicio</button>
   <button type="button" id="b-prev" aria-label="Anterior">←</button>
   <button type="button" id="b-next" aria-label="Siguiente">→</button>
   <button type="button" id="b-full">Pantalla completa</button>
 </div>
 </div>
 <div class="blackout" id="blackout"></div>
-<div class="hint" id="hint">→ / clicker para avanzar · F pantalla completa · B pantalla negra</div>
+<div class="hint" id="hint">→ / clicker para avanzar · ← retroceder · Inicio: primera slide · F pantalla completa</div>
 
 <script>
 (function () {
@@ -878,7 +879,6 @@ mark.sand { color: var(--terra); }
     });
     stepsOf(slides[i]).forEach((el, k) => el.classList.toggle('shown', k < s));
     document.title = 'Del modelo a la confianza · ' + (i + 1) + '/' + n;
-    try { localStorage.setItem('genai-slide', String(i)); } catch (e) {}
   }
 
   function next() {
@@ -918,6 +918,7 @@ mark.sand { color: var(--terra); }
 
   stage.addEventListener('click', (e) => { if (e.target.closest('.hud')) return; hideHint(); next(); });
   document.getElementById('b-prev').addEventListener('click', (e) => { e.stopPropagation(); prev(); });
+  document.getElementById('b-home').addEventListener('click', (e) => { e.stopPropagation(); go(0); });
   document.getElementById('b-next').addEventListener('click', (e) => { e.stopPropagation(); next(); });
   document.getElementById('b-full').addEventListener('click', (e) => { e.stopPropagation(); toggleFull(); });
 
@@ -934,7 +935,6 @@ mark.sand { color: var(--terra); }
 
   window.addEventListener('resize', fit);
   fit();
-  try { const saved = parseInt(localStorage.getItem('genai-slide') || '0', 10); if (saved > 0 && saved < n) i = saved; } catch (e) {}
   render();
 })();
 </script>

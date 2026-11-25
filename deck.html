@@ -180,9 +180,9 @@ mark.sand { color: var(--terra); }
 
 .quote { font-size: 62px; font-weight: 500; line-height: 1.12; letter-spacing: -1px; text-wrap: balance; max-width: 1050px; }
 
-.hud { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 6px; opacity: 0; transition: opacity 300ms; z-index: 5; }
+.hud { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); top: calc(12px + env(safe-area-inset-top, 0px)); display: flex; gap: 6px; opacity: 0; transition: opacity 300ms; z-index: 5; }
 .stage.pointer .hud { opacity: 1; }
-.hud button { font: 500 13px var(--mono); background: var(--card); color: var(--ink); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.hud button { font: 500 13px var(--mono); background: rgba(255,255,255,.92); color: var(--ink); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
 .hud button:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
 .blackout { position: fixed; inset: 0; background: #000; z-index: 10; display: none; }
 .blackout.on { display: block; }

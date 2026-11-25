@@ -211,7 +211,7 @@ mark.sand { color: var(--terra); }
 .video .ph .play::after { content: ""; border-left: 16px solid var(--mint-2); border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
 .video .ph p { font-size: 18px; color: #BFD8CD; max-width: 380px; }
 .video .ph code { font-family: var(--mono); font-size: 12px; color: var(--mint-2); }
-.video .cap { position: absolute; right: 12px; bottom: 12px; font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: #FAFAF2; background: rgba(7,33,26,.82); padding: 5px 10px; border-radius: 6px; }
+.video .cap { position: absolute; left: 12px; bottom: 12px; font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: #FAFAF2; background: rgba(7,33,26,.82); padding: 5px 10px; border-radius: 6px; }
 
 .steps { display: flex; flex-direction: column; gap: 14px; }
 .step { display: flex; align-items: center; gap: 16px; }
@@ -277,6 +277,11 @@ mark.sand { color: var(--terra); }
 .blackout.on { display: block; }
 .hint { position: fixed; left: 50%; top: calc(12px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); background: var(--deep); color: #FAFAF2; font: 500 13px var(--mono); padding: 8px 14px; border-radius: 999px; z-index: 6; transition: opacity 500ms; }
 .hint.gone { opacity: 0; pointer-events: none; }
+
+.export .hint, .export .hud { display: none !important; }
+.export .cues li.on { background: transparent; border-color: transparent; }
+.export .cues li.on::before { background: var(--rule); color: var(--soft); }
+.export *, .export *::before { animation: none !important; transition: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .slide, [data-step], .active .rise { transition: none !important; animation: none !important; }
@@ -1028,6 +1033,13 @@ mark.sand { color: var(--terra); }
 
   window.addEventListener('resize', fit);
   fit();
+  // Modo exportación (?export=N): muestra la slide N con todo su contenido, sin animaciones ni controles
+  const params = new URLSearchParams(location.search);
+  if (params.has('export')) {
+    document.documentElement.classList.add('export');
+    i = Math.max(0, Math.min(n - 1, parseInt(params.get('export'), 10) - 1 || 0));
+    s = stepsOf(slides[i]).length;
+  }
   render();
 })();
 </script>

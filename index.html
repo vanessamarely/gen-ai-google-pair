@@ -355,21 +355,21 @@ mark.sand { color: var(--terra); }
       <div class="ch">La IA de siempre</div>
       <div class="ch gen">IA Generativa</div>
 
-      <div class="cl" data-step>Qué hace</div>
-      <div class="cc" data-step>Clasifica y predice</div>
-      <div class="cc gen" data-step><b>Crea contenido nuevo</b></div>
+      <div class="cl" data-step="r1">Qué hace</div>
+      <div class="cc" data-step="r1">Clasifica y predice</div>
+      <div class="cc gen" data-step="r1"><b>Crea contenido nuevo</b></div>
 
-      <div class="cl" data-step>Le pides</div>
-      <div class="cc" data-step>“¿Este correo es spam?”</div>
-      <div class="cc gen" data-step>“Responde este correo por mí”</div>
+      <div class="cl" data-step="r2">Le pides</div>
+      <div class="cc" data-step="r2">“¿Este correo es spam?”</div>
+      <div class="cc gen" data-step="r2">“Responde este correo por mí”</div>
 
-      <div class="cl" data-step>La ves en</div>
-      <div class="cc" data-step>Filtros, recomendaciones, detección de fraude</div>
-      <div class="cc gen" data-step>Asistentes de chat, imágenes, resúmenes</div>
+      <div class="cl" data-step="r3">La ves en</div>
+      <div class="cc" data-step="r3">Filtros, recomendaciones, detección de fraude</div>
+      <div class="cc gen" data-step="r3">Asistentes de chat, imágenes, resúmenes</div>
 
-      <div class="cl" data-step>Su error típico</div>
-      <div class="cc" data-step>Elige la categoría equivocada</div>
-      <div class="cc gen err" data-step><b>Inventa con total seguridad</b></div>
+      <div class="cl" data-step="r4">Su error típico</div>
+      <div class="cc" data-step="r4">Elige la categoría equivocada</div>
+      <div class="cc gen err" data-step="r4"><b>Inventa con total seguridad</b></div>
     </div>
   </div>
 </section>
@@ -844,7 +844,16 @@ mark.sand { color: var(--terra); }
   });
   pageno.remove();
 
-  const stepsOf = (sl) => Array.from(sl.querySelectorAll('[data-step]'));
+  // steps: elements sharing a non-empty data-step value reveal together on one click
+  const stepsOf = (sl) => {
+    const groups = [], byName = {};
+    sl.querySelectorAll('[data-step]').forEach((el) => {
+      const g = el.getAttribute('data-step');
+      if (g) { if (!byName[g]) { byName[g] = []; groups.push(byName[g]); } byName[g].push(el); }
+      else groups.push([el]);
+    });
+    return groups;
+  };
 
   // videos: attach source, reveal when it loads; placeholder stays if the file is missing
   document.querySelectorAll('.video[data-video]').forEach((box) => {
@@ -877,7 +886,7 @@ mark.sand { color: var(--terra); }
         if (on) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else { v.pause(); }
       });
     });
-    stepsOf(slides[i]).forEach((el, k) => el.classList.toggle('shown', k < s));
+    stepsOf(slides[i]).forEach((grp, k) => grp.forEach((el) => el.classList.toggle('shown', k < s)));
     document.title = 'Del modelo a la confianza · ' + (i + 1) + '/' + n;
   }
 

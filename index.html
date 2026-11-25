@@ -132,6 +132,10 @@ mark.sand { color: var(--terra); }
 .steps { display: flex; flex-direction: column; gap: 14px; }
 .step { display: flex; align-items: center; gap: 16px; }
 .step p { font-size: 23px; }
+.steps.list .step { flex: 1; gap: 22px; border-top: 1px solid var(--rule); }
+.steps.list .step:last-child { border-bottom: 1px solid var(--rule); }
+.steps.list .dot { width: 52px; height: 52px; font-size: 21px; }
+
 
 .about { display: flex; align-items: center; gap: 48px; flex: 1; }
 .avatar { width: 200px; height: 200px; border-radius: 50%; background: var(--mint); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 500; color: var(--green); border: 1px solid var(--rule); }
@@ -779,12 +783,12 @@ mark.sand { color: var(--terra); }
   <div class="frame">
     <p class="eyebrow">Para llevar · Toma foto</p>
     <h2>5 preguntas antes de lanzar algo con <mark>IA</mark></h2>
-    <div class="steps" style="margin-top:24px; gap:14px;">
-      <div class="step" data-step><div class="dot sand">1</div><p style="font-size:26px;">¿Qué necesidad real de las personas resuelve?</p></div>
-      <div class="step" data-step><div class="dot sky">2</div><p style="font-size:26px;">¿Saben que hablan con una IA y qué puede (y no) hacer?</p></div>
-      <div class="step" data-step><div class="dot">3</div><p style="font-size:26px;">¿Pueden corregirla, deshacer o pedir una persona?</p></div>
-      <div class="step" data-step><div class="dot blush">4</div><p style="font-size:26px;">¿Qué pasa cuando se equivoca, y quién responde?</p></div>
-      <div class="step" data-step><div class="dot mint">5</div><p style="font-size:26px;">¿Cómo vamos a escuchar y mejorar después?</p></div>
+    <div class="steps list" style="margin-top:40px; flex:1; gap:0; margin-bottom:8px;">
+      <div class="step" data-step><div class="dot sand">1</div><p style="font-size:30px;">¿Qué necesidad real de las personas resuelve?</p></div>
+      <div class="step" data-step><div class="dot sky">2</div><p style="font-size:30px;">¿Saben que hablan con una IA y qué puede (y no) hacer?</p></div>
+      <div class="step" data-step><div class="dot">3</div><p style="font-size:30px;">¿Pueden corregirla, deshacer o pedir una persona?</p></div>
+      <div class="step" data-step><div class="dot blush">4</div><p style="font-size:30px;">¿Qué pasa cuando se equivoca, y quién responde?</p></div>
+      <div class="step" data-step><div class="dot mint">5</div><p style="font-size:30px;">¿Cómo vamos a escuchar y mejorar después?</p></div>
     </div>
   </div>
 </section>

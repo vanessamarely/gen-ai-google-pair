@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Del modelo a la confianza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 1280×720 (16:9) executive deck scaled to fit. Ivory page, left-aligned headlines, hairline footer carrying the speaker's site on every slide; deep-green section plates with PAIR-style geometric art. */
+:root {
+  --page: #F7F7F2;
+  --card: #FFFFFF;
+  --ink: #142019;
+  --soft: #4C5A53;
+  --muted: #7A8781;
+  --rule: #D6DFD9;
+  --green: #006B55;
+  --forest: #2C5C50;
+  --deep: #07211A;
+  --mint: #E3F1EA;
+  --mint-2: #61DBB9;
+  --sand: #F6EEDA;
+  --blush: #F6E1DA;
+  --terra: #9A432D;
+  --display: 'Google Sans', 'Product Sans', system-ui, sans-serif;
+  --mono: 'Roboto Mono', ui-monospace, 'Courier New', monospace;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body { margin: 0; background: #0E1512; color: var(--ink); font-family: var(--display); overflow: hidden; }
+
+.stage { position: fixed; inset: 0; background: #0E1512; }
+.deck { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center center; background: var(--page); overflow: hidden; }
+
+.slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity 400ms ease, visibility 0s linear 400ms; background: var(--page); }
+.slide.active { opacity: 1; visibility: visible; transition: opacity 400ms ease; }
+
+.frame { position: absolute; left: 0; top: 0; right: 0; bottom: 56px; padding: 48px 72px 26px; box-sizing: border-box; display: flex; flex-direction: column; }
+.frame.center { justify-content: center; }
+.frame.mint { background: var(--mint); }
+.frame.flush { padding: 0; bottom: 0; }
+
+/* footer on every slide */
+.foot { position: absolute; left: 72px; right: 72px; bottom: 0; height: 56px; border-top: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 13px; letter-spacing: 0.5px; color: var(--muted); }
+.foot b { color: var(--ink); font-weight: 500; }
+.dark-slide .foot { border-top-color: rgba(250,250,242,.18); color: #9FB8AD; }
+.dark-slide .foot b { color: #FAFAF2; }
+.slide.dark-slide { background: var(--deep); }
+
+/* type */
+.eyebrow { font-family: var(--mono); font-size: 15px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--green); margin: 0 0 14px; }
+h1, h2, h3 { margin: 0; font-weight: 500; letter-spacing: -0.6px; text-wrap: balance; }
+h1 { font-size: 72px; line-height: 1.02; }
+h2 { font-size: 52px; line-height: 1.08; max-width: 1080px; }
+h2.c { text-align: center; margin-left: auto; margin-right: auto; }
+h3 { font-size: 26px; line-height: 1.22; font-weight: 500; }
+p { margin: 0; font-size: 22px; line-height: 1.45; }
+.lead { font-size: 25px; line-height: 1.45; color: var(--soft); max-width: 900px; }
+.sub { font-family: var(--mono); font-size: 17px; color: var(--soft); letter-spacing: 0.5px; }
+mark { background: none; color: var(--green); padding: 0; }
+mark.sand { color: var(--terra); }
+.terra { color: var(--terra); }
+
+/* boxes */
+.box { border: 1px solid var(--rule); border-radius: 14px; padding: 20px 22px; background: var(--card); display: flex; flex-direction: column; gap: 8px; }
+.box.mint { background: var(--mint); border-color: #CFE5DA; }
+.box.sand { background: var(--sand); border-color: #EADFC2; }
+.box.blush { background: var(--blush); border-color: #EBCFC5; }
+.box.sky { background: #E6EEF5; border-color: #D2DFEA; }
+.box .tag { font-family: var(--mono); font-size: 14px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--green); }
+.box .t { font-size: 20px; line-height: 1.4; color: var(--soft); }
+.box .tools { font-family: var(--mono); font-size: 15px; color: var(--muted); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.grid { display: grid; gap: 18px; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.g4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+.pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); border-radius: 999px; padding: 7px 16px; font-size: 18px; font-weight: 500; background: var(--card); align-self: flex-start; }
+.pill.mint { background: var(--mint); border-color: #CFE5DA; color: #004236; }
+.pill.sand { background: var(--sand); border-color: #EADFC2; color: #5A4300; }
+.pill.blush { background: var(--blush); border-color: #EBCFC5; color: #7A2F1C; }
+
+.dot { width: 46px; height: 46px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 500; font-size: 19px; flex-shrink: 0; background: var(--green); color: #FAFAF2; }
+.dot.sand, .dot.sky, .dot.blush, .dot.mint { background: var(--green); }
+
+.flow { display: flex; align-items: stretch; gap: 14px; }
+.flow .box { flex: 1; }
+.arrow { align-self: center; font-size: 24px; color: var(--green); }
+
+.timeline { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 40px; }
+.timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 23px; border-top: 1px solid var(--rule); }
+.timeline .item { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.timeline .item .k { font-family: var(--mono); font-size: 14px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--green); margin-top: 8px; }
+.timeline .item h3 { font-size: 25px; }
+.timeline .item p { font-size: 20px; color: var(--soft); }
+
+/* section plates */
+.split { display: grid; grid-template-columns: 7fr 5fr; height: 100%; }
+.split .l { padding: 72px 80px 120px; display: flex; flex-direction: column; justify-content: center; gap: 16px; background: var(--deep); color: #FAFAF2; }
+.split .l .lead { color: #BFD8CD; }
+.split .l .sub { color: #BFD8CD; }
+.split .l .eyebrow { color: var(--mint-2); }
+.split .l mark { color: var(--mint-2); }
+.split .l .pill { color: var(--ink); }
+.split .l .pill.mint { color: #004236; }
+.split .r { background: var(--forest); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.split .r.mint { background: #3E7A68; }
+.split .r.deep { background: #0F3A2E; }
+.big-n { font-family: var(--mono); font-size: 20px; letter-spacing: 3px; color: var(--mint-2); line-height: 1; }
+.split h2 { font-size: 62px; color: #FAFAF2; }
+
+.shot { border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; background: var(--card); padding: 10px; box-shadow: 0 18px 40px -24px rgba(7,33,26,.35); }
+.shot img { display: block; width: 100%; height: auto; border-radius: 8px; }
+.cols { display: grid; grid-template-columns: 5fr 6fr; gap: 48px; align-items: center; flex: 1; }
+
+.video { position: relative; border-radius: 14px; background: var(--card); border: 1px solid var(--rule); overflow: hidden; aspect-ratio: 16 / 10; max-width: 100%; box-shadow: 0 18px 40px -24px rgba(7,33,26,.45); }
+.video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--card); opacity: 0; }
+.video.ready video { opacity: 1; }
+.video .ph { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 28px; text-align: center; }
+.video.ready .ph { display: none; }
+.video img.still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--card); }
+.video.ready img.still { display: none; }
+.video video { z-index: 1; }
+.video .cap { z-index: 2; }
+.video .ph .play { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--mint-2); display: flex; align-items: center; justify-content: center; }
+.video .ph .play::after { content: ""; border-left: 16px solid var(--mint-2); border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
+.video .ph p { font-size: 18px; color: #BFD8CD; max-width: 380px; }
+.video .ph code { font-family: var(--mono); font-size: 12px; color: var(--mint-2); }
+.video .cap { position: absolute; right: 12px; bottom: 12px; font-family: var(--mono); font-size: 11px; letter-spacing: 1px; color: #FAFAF2; background: rgba(7,33,26,.82); padding: 5px 10px; border-radius: 6px; }
+
+.steps { display: flex; flex-direction: column; gap: 14px; }
+.step { display: flex; align-items: center; gap: 16px; }
+.step p { font-size: 23px; }
+
+.about { display: flex; align-items: center; gap: 48px; flex: 1; }
+.avatar { width: 200px; height: 200px; border-radius: 50%; background: var(--mint); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 500; color: var(--green); border: 1px solid var(--rule); }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.about ul { margin: 16px 0 20px; padding-left: 24px; font-size: 24px; line-height: 1.6; color: var(--soft); }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+[data-step] { opacity: 0; transform: translateY(12px); transition: opacity 380ms ease, transform 380ms ease; }
+[data-step].shown { opacity: 1; transform: none; }
+
+.active .rise { animation: rise 560ms ease-out both; animation-delay: calc(var(--i, 0) * 90ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.spectrum { position: relative; height: 10px; border-radius: 999px; background: linear-gradient(90deg, #D99A86, var(--mint-2) 50%, #D99A86); margin: 48px 0 20px; }
+.spectrum .knob { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; border-radius: 50%; background: var(--card); border: 3px solid var(--green); transform: translate(-50%, -50%); }
+.ends { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.ends > div:nth-child(2) { text-align: center; }
+.ends > div:nth-child(3) { text-align: right; }
+
+.rows { display: flex; flex-direction: column; border-top: 1px solid var(--ink); margin-top: 26px; flex: 1; }
+.rows .row { flex: 1; }
+.rows .row:first-child { flex: 0 0 auto; }
+.row { display: grid; grid-template-columns: 1.4fr 0.8fr 1.8fr; gap: 18px; padding: 12px 4px; align-items: center; font-size: 21px; border-bottom: 1px solid var(--rule); }
+.row:first-child { font-family: var(--mono); font-size: 14px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--green); }
+.row b { font-weight: 500; font-size: 23px; }
+.row .who { font-family: var(--mono); font-size: 16px; color: var(--soft); }
+
+
+.compare { display: grid; grid-template-columns: 0.75fr 1fr 1fr; column-gap: 18px; margin-top: 26px; flex: 1; align-content: stretch; grid-template-rows: auto repeat(4, 1fr); }
+.compare .ch { font-family: var(--mono); font-size: 15px; letter-spacing: 2px; text-transform: uppercase; color: var(--soft); padding: 0 22px 12px; }
+.compare .ch.gen { color: var(--green); }
+.compare .cl { font-family: var(--mono); font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--green); display: flex; align-items: center; border-top: 1px solid var(--rule); }
+.compare .cc { font-size: 25px; line-height: 1.3; display: flex; align-items: center; padding: 0 22px; border-top: 1px solid var(--rule); background: var(--card); }
+.compare .cc.gen { background: var(--mint); border-top-color: #CFE5DA; }
+.compare .cc.err b { color: var(--terra); }
+.compare .cc b { font-weight: 500; }
+
+
+.cues { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; counter-reset: cue; }
+.cues li { counter-increment: cue; display: grid; grid-template-columns: 36px 1fr; column-gap: 12px; padding: 10px 12px; border-radius: 10px; border: 1px solid transparent; transition: background-color 300ms, border-color 300ms; }
+.cues li::before { content: counter(cue); grid-row: span 2; width: 32px; height: 32px; border-radius: 8px; background: var(--rule); color: var(--soft); font-family: var(--mono); font-size: 15px; display: flex; align-items: center; justify-content: center; transition: background-color 300ms, color 300ms; }
+.cues li b { font-weight: 500; font-size: 21px; line-height: 1.25; }
+.cues li span { font-size: 16.5px; color: var(--soft); line-height: 1.35; }
+.cues li.on { background: var(--mint); border-color: #CFE5DA; }
+.cues li.on::before { background: var(--green); color: #FAFAF2; }
+.box { justify-content: center; }
+
+.quote { font-size: 62px; font-weight: 500; line-height: 1.12; letter-spacing: -1px; text-wrap: balance; max-width: 1050px; }
+
+.hud { position: fixed; right: max(12px, env(safe-area-inset-right, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 6px; opacity: 0; transition: opacity 300ms; z-index: 5; }
+.stage.pointer .hud { opacity: 1; }
+.hud button { font: 500 13px var(--mono); background: var(--card); color: var(--ink); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+.hud button:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.blackout { position: fixed; inset: 0; background: #000; z-index: 10; display: none; }
+.blackout.on { display: block; }
+.hint { position: fixed; left: 50%; top: calc(12px + env(safe-area-inset-top, 0px)); transform: translateX(-50%); background: var(--deep); color: #FAFAF2; font: 500 13px var(--mono); padding: 8px 14px; border-radius: 999px; z-index: 6; transition: opacity 500ms; }
+.hint.gone { opacity: 0; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide, [data-step], .active .rise { transition: none !important; animation: none !important; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ill-stairs" viewBox="0 0 400 400">
+      <g stroke="#1A1C18" stroke-width="3" stroke-linejoin="round">
+        <polygon points="220,95 255,60 345,60 310,95" fill="#2C685D"/>
+        <polygon points="310,95 345,60 345,150 310,185" fill="#3E8E5A"/>
+        <rect x="220" y="95" width="90" height="90" fill="#8BC48A"/>
+        <polygon points="150,175 185,140 275,140 240,175" fill="#2C685D"/>
+        <polygon points="240,175 275,140 275,230 240,265" fill="#3E8E5A"/>
+        <rect x="150" y="175" width="90" height="90" fill="#8BC48A"/>
+        <polygon points="80,255 115,220 205,220 170,255" fill="#2C685D"/>
+        <polygon points="170,255 205,220 205,310 170,345" fill="#3E8E5A"/>
+        <rect x="80" y="255" width="90" height="90" fill="#8BC48A"/>
+      </g>
+      <circle cx="232" cy="150" r="42" fill="none" stroke="#FAFAF2" stroke-width="5"/>
+    </symbol>
+    <symbol id="ill-bars" viewBox="0 0 400 400">
+      <g stroke="#1A1C18" stroke-width="3">
+        <rect x="70" y="90" width="260" height="70" rx="10" fill="#2C685D"/>
+        <rect x="80" y="185" width="240" height="66" rx="10" fill="#3E8E5A" transform="rotate(-6 200 218)"/>
+        <rect x="76" y="275" width="250" height="66" rx="10" fill="#8BC48A"/>
+      </g>
+      <circle cx="200" cy="125" r="44" fill="none" stroke="#FAFAF2" stroke-width="5"/>
+    </symbol>
+    <symbol id="ill-orbit" viewBox="0 0 400 400">
+      <circle cx="200" cy="200" r="130" fill="none" stroke="#FAFAF2" stroke-width="4" stroke-dasharray="10 12"/>
+      <g stroke="#1A1C18" stroke-width="3">
+        <circle cx="200" cy="200" r="70" fill="#61DBB9"/>
+        <circle cx="330" cy="200" r="26" fill="#F6E6B4"/>
+        <circle cx="108" cy="108" r="22" fill="#F3D3C8"/>
+        <circle cx="140" cy="318" r="18" fill="#CEE9DD"/>
+      </g>
+      <circle cx="200" cy="200" r="28" fill="#07211A"/>
+    </symbol>
+    <symbol id="ill-hands" viewBox="0 0 400 400">
+      <g stroke="#1A1C18" stroke-width="3" stroke-linejoin="round">
+        <rect x="60" y="230" width="80" height="120" rx="40" fill="#F4A99A"/>
+        <rect x="160" y="170" width="80" height="180" rx="40" fill="#61DBB9"/>
+        <rect x="260" y="120" width="80" height="230" rx="40" fill="#F7D36B"/>
+      </g>
+      <circle cx="300" cy="80" r="26" fill="none" stroke="#FAFAF2" stroke-width="5"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage" id="stage">
+<div class="deck" id="deck">
+
+<!-- 1 · Portada -->
+<section class="slide" data-title="Portada">
+  <div class="frame flush">
+    <div class="split">
+      <div class="l">
+        <p class="eyebrow rise" style="--i:0">explain.la 2026 · GenAI</p>
+        <h1 class="rise" style="--i:1; font-size:84px; line-height:1.0; letter-spacing:-2.5px; color:#FAFAF2;">Del modelo a la <mark>confianza</mark></h1>
+        <p class="rise" style="--i:2; font-size:26px; line-height:1.3; color:#FAFAF2; max-width:600px;">Cómo diseñar IA Generativa</p>
+        <p class="lead rise" style="--i:3; font-size:17px;">Con base en la investigación de Google PAIR · People + AI Research</p>
+      </div>
+      <div class="r"><svg width="340" height="340" aria-hidden="true"><use href="#ill-stairs"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Hola -->
+<section class="slide" data-title="Quién soy">
+  <div class="frame">
+    <div class="about">
+      <div class="avatar" id="avatar"><img src="assets/vanessa.jpg" alt="Vanessa Aristizabal" onerror="this.remove()"></div>
+      <div>
+        <h2 style="font-size:42px;">Vanessa Aristizabal</h2>
+        <p class="sub" style="margin-top:6px;">Software Engineer</p>
+        <ul>
+          <li>Ingeniera de Sistemas y Magíster en Ingeniería</li>
+          <li>Google Developer Expert · Web Technologies &amp; Angular</li>
+          <li>GitHub Star · Creadora de contenido</li>
+        </ul>
+        <div class="pills">
+          <span class="pill mint">vanessamarely.dev</span>
+          <span class="pill">linkedin.com/in/vanessa-marely-aristizabal-angel</span>
+          <span class="pill">GitHub · vanessamarely</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Levanta la mano -->
+<section class="slide" data-title="Levanta la mano">
+  <div class="frame">
+    <p class="eyebrow">Pregunta a la sala</p>
+    <h2>Levante la mano <mark>si en su organización…</mark></h2>
+    <div class="grid g2" style="margin-top:26px; flex:1; align-content:center;">
+      <div class="box" data-step><span class="tag">01</span><h3 style="font-size:30px;">…alguien usó un asistente de IA esta semana</h3></div>
+      <div class="box" data-step><span class="tag">02</span><h3 style="font-size:30px;">…ya hay un correo, informe o pieza hecha con IA</h3></div>
+      <div class="box" data-step><span class="tag">03</span><h3 style="font-size:30px;">…existe una política clara sobre cómo usarla</h3></div>
+      <div class="box blush" data-step><span class="tag">04</span><h3 style="font-size:30px;">…alguien confió en una respuesta <span class="terra">sin revisarla</span></h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · Sección 1 -->
+<section class="slide" data-title="Parte 1">
+  <div class="frame flush">
+    <div class="split">
+      <div class="l">
+        <p class="big-n rise" style="--i:0">01</p>
+        <h2 class="rise" style="--i:1">¿Qué es la <mark>IA Generativa</mark>?</h2>
+        <p class="lead rise" style="--i:2">Sin tecnicismos, prometido.</p>
+      </div>
+      <div class="r mint"><svg width="320" height="320" aria-hidden="true"><use href="#ill-orbit"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Definición -->
+<section class="slide" data-title="Definición">
+  <div class="frame center">
+    <h2 class="c">La IA Generativa es IA que <mark>crea</mark></h2>
+    <p class="lead" style="text-align:center; margin:12px auto 0; max-width:700px;">Le das una instrucción en tus palabras, un <i>prompt</i>, y produce algo nuevo: texto, imágenes, audio, video o código.</p>
+    <div class="flow" style="margin-top:30px;">
+      <div class="box" data-step><span class="tag">01 · Tú pides</span><h3>“Escribe un aviso claro sobre el cierre de la vía el sábado”</h3></div>
+      <span class="arrow" data-step>→</span>
+      <div class="box" data-step><span class="tag">02 · El modelo</span><h3>Predice</h3><p class="t">Calcula, palabra por palabra, lo más probable</p></div>
+      <span class="arrow" data-step>→</span>
+      <div class="box mint" data-step><span class="tag">03 · Resultado</span><h3>Algo nuevo</h3><p class="t">Un texto que no existía antes</p></div>
+    </div>
+    <div style="display:flex; justify-content:center; margin-top:22px;" data-step>
+      <span class="pill sand">Útil, pero no necesariamente cierto</span>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · Autocompletar -->
+<section class="slide" data-title="Autocompletar">
+  <div class="frame center">
+    <h2 class="c">Funciona como el autocompletar del celular, <mark>a gran escala</mark></h2>
+    <div class="timeline">
+      <div class="item" data-step><div class="dot sand">1</div><span class="k">Leer</span><h3>Lee tu instrucción</h3><p>Y todo el contexto que le diste</p></div>
+      <div class="item" data-step><div class="dot sky">2</div><span class="k">Predecir</span><h3>Elige la siguiente palabra</h3><p>La más probable según lo que aprendió</p></div>
+      <div class="item" data-step><div class="dot">3</div><span class="k">Repetir</span><h3>Lo hace miles de veces</h3><p>Hasta armar la respuesta completa</p></div>
+      <div class="item" data-step><div class="dot blush">4</div><span class="k">Entregar</span><h3>Suena muy seguro</h3><p>Aunque a veces se lo invente</p></div>
+    </div>
+    <p style="text-align:center; margin-top:34px; font-size:24px;" data-step>Cuando se inventa algo con total seguridad, lo llamamos <b>alucinación</b>.</p>
+  </div>
+</section>
+
+<!-- 7 · Clasifica vs crea -->
+<section class="slide" data-title="Clasifica vs crea">
+  <div class="frame">
+    <p class="eyebrow">¿Qué cambió?</p>
+    <h2>De IA que clasifica a IA que <mark>crea</mark></h2>
+    <div class="compare">
+      <div class="ch"></div>
+      <div class="ch">La IA de siempre</div>
+      <div class="ch gen">IA Generativa</div>
+
+      <div class="cl" data-step>Qué hace</div>
+      <div class="cc" data-step>Clasifica y predice</div>
+      <div class="cc gen" data-step><b>Crea contenido nuevo</b></div>
+
+      <div class="cl" data-step>Le pides</div>
+      <div class="cc" data-step>“¿Este correo es spam?”</div>
+      <div class="cc gen" data-step>“Responde este correo por mí”</div>
+
+      <div class="cl" data-step>La ves en</div>
+      <div class="cc" data-step>Filtros, recomendaciones, detección de fraude</div>
+      <div class="cc gen" data-step>Asistentes de chat, imágenes, resúmenes</div>
+
+      <div class="cl" data-step>Su error típico</div>
+      <div class="cc" data-step>Elige la categoría equivocada</div>
+      <div class="cc gen err" data-step><b>Inventa con total seguridad</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · ¿Quién lo escribió? -->
+<section class="slide" data-title="¿Quién lo escribió?">
+  <div class="frame">
+    <p class="eyebrow">Interactivo · Vota con la mano</p>
+    <h2>¿Lo escribió una <mark>persona</mark> o una <mark class="sand">IA</mark>?</h2>
+    <div class="grid g2" style="margin-top:24px;">
+      <div class="box"><span class="tag">Texto A</span><p style="font-size:26px; line-height:1.4;">“Estimada ciudadana: su solicitud fue recibida y será atendida en un plazo de 10 días hábiles. Gracias por su paciencia.”</p></div>
+      <div class="box"><span class="tag">Texto B</span><p style="font-size:26px; line-height:1.4;">“Las ciudades no se miden en metros, sino en las veces que alguien te sostiene la puerta.”</p></div>
+    </div>
+    <div class="box" style="margin-top:20px; background:var(--deep); border-color:var(--deep);" data-step>
+      <p style="font-size:25px; color:#FAFAF2;"><b style="color:var(--mint-2);">Los dos los escribió una IA.</b> Ninguno dice de dónde salió la información ni si es verdad.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · Sección 2 -->
+<section class="slide" data-title="Parte 2">
+  <div class="frame flush">
+    <div class="split">
+      <div class="l">
+        <p class="big-n rise" style="--i:0">02</p>
+        <h2 class="rise" style="--i:1">¿Qué se puede <mark>hacer</mark> con ella?</h2>
+        <p class="lead rise" style="--i:2">Más de lo que imaginas, con herramientas que ya existen.</p>
+      </div>
+      <div class="r"><svg width="320" height="320" aria-hidden="true"><use href="#ill-bars"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Capacidades -->
+<section class="slide" data-title="Seis capacidades">
+  <div class="frame">
+    <p class="eyebrow">Seis capacidades</p>
+    <h2>Lo que hoy puede <mark>crear</mark></h2>
+    <div class="grid g3" style="margin-top:22px; flex:1;">
+      <div class="box rise" style="--i:0"><span class="tag">Texto</span><h3>Correos, resúmenes, informes</h3><span class="tools">Gemini · ChatGPT · Claude</span></div>
+      <div class="box mint rise" style="--i:1"><span class="tag">Imágenes</span><h3>Piezas de campaña e ilustraciones</h3><span class="tools">Gemini · ChatGPT · Firefly</span></div>
+      <div class="box rise" style="--i:2"><span class="tag">Video</span><h3>Clips cortos y material de formación</h3><span class="tools">Veo · Runway</span></div>
+      <div class="box sand rise" style="--i:3"><span class="tag">Voz y audio</span><h3>Documentos convertidos en pódcast</h3><span class="tools">Gemini Notebook · Gemini Live</span></div>
+      <div class="box rise" style="--i:4"><span class="tag">Apps</span><h3>Prototipos sin saber programar</h3><span class="tools">AI Studio · Canvas</span></div>
+      <div class="box sky rise" style="--i:5"><span class="tag">Agentes</span><h3>Tareas de varios pasos por ti</h3><span class="tools">Buscar · comparar · agendar</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Demo 1 -->
+<section class="slide" data-title="Demo lenguaje claro">
+  <div class="frame">
+    <p class="eyebrow">Demo 1 · Gemini · Sector público</p>
+    <div class="cols" style="grid-template-columns: 4fr 6fr;">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <h2 style="font-size:42px;">Del lenguaje jurídico al <mark>lenguaje claro</mark></h2>
+        <div class="box" style="padding:14px 16px;"><span class="tag">Texto oficial</span><p class="t" style="font-size:19px;">“El beneficiario deberá acreditar la condición de vulnerabilidad mediante certificación expedida por la autoridad competente… so pena de la pérdida del beneficio.”</p></div>
+        <div class="box mint" style="padding:14px 16px;"><span class="tag">Respuesta de Gemini</span><p class="t" style="font-size:20px; color:var(--ink);">“Debe demostrar que cumple los requisitos presentando un certificado oficial. Tiene 10 días hábiles. Si no lo entrega a tiempo, perderá el beneficio.”</p></div>
+      </div>
+      <div class="video" data-video="assets/demo-lenguaje-claro.mp4">
+        <video muted loop playsinline preload="auto" poster="assets/demo-lenguaje-claro.jpg"></video>
+        <img class="still" src="assets/demo-lenguaje-claro.jpg" alt="Gemini explicando un texto oficial en lenguaje claro">
+        <span class="cap">Grabación real · gemini.google.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · Demo 2 -->
+<section class="slide" data-title="Demo campaña">
+  <div class="frame">
+    <p class="eyebrow">Demo 2 · Gemini · Comunicación</p>
+    <div class="cols" style="grid-template-columns: 4fr 6fr;">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <h2 style="font-size:42px;">Un aviso ciudadano en <mark>segundos</mark></h2>
+        <div class="steps">
+          <div class="step"><div class="dot">1</div><p>Pido un aviso para adultos mayores</p></div>
+          <div class="step"><div class="dot">2</div><p>Defino lugar, hora, extensión y tono</p></div>
+          <div class="step"><div class="dot">3</div><p>Gemini propone un texto cálido y claro</p></div>
+          <div class="step"><div class="dot">4</div><p><b>Una persona revisa antes de publicar</b></p></div>
+        </div>
+      </div>
+      <div class="video" data-video="assets/demo-campana.mp4">
+        <video muted loop playsinline preload="auto" poster="assets/demo-campana.jpg"></video>
+        <img class="still" src="assets/demo-campana.jpg" alt="Gemini redactando un aviso de jornada de reciclaje">
+        <span class="cap">Grabación real · gemini.google.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12b · Gemini Notebook -->
+<section class="slide" data-title="Gemini Notebook">
+  <div class="frame">
+    <p class="eyebrow">Demo 3 · Gemini Notebook (antes NotebookLM)</p>
+    <div class="cols" style="grid-template-columns: 4fr 6fr;">
+      <div style="display:flex; flex-direction:column; gap:18px;">
+        <h2 style="font-size:42px;">Conversar con <mark>tus propios documentos</mark></h2>
+        <p class="lead" style="font-size:22px;">Subes normas, informes o manuales y la IA responde basada solo en esas fuentes, citándolas.</p>
+        <div class="grid g2" style="gap:10px;">
+          <span class="pill mint">Presentaciones</span>
+          <span class="pill mint">Mapas mentales</span>
+          <span class="pill mint">Resúmenes en audio</span>
+          <span class="pill mint">Resúmenes en video</span>
+        </div>
+      </div>
+      <div class="video" data-video="assets/demo-notebook.mp4">
+        <video muted loop playsinline preload="auto" poster="assets/demo-notebook.jpg"></video>
+        <img class="still" src="assets/demo-notebook.jpg" alt="Sitio de Gemini Notebook mostrando sus formatos">
+        <span class="cap">notebook.google</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · Empresas -->
+<section class="slide" data-title="Empresas">
+  <div class="frame">
+    <p class="eyebrow">Para empresas</p>
+    <h2>Dónde está aportando <mark>valor hoy</mark></h2>
+    <div class="grid g2" style="margin-top:28px; flex:1; margin-bottom:24px;">
+      <div class="box rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:0"><span class="tag">Atención al cliente</span><h3 style="font-size:32px; line-height:1.2;">Respuestas 24/7 y borradores para soporte</h3></div>
+      <div class="box rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:1"><span class="tag">Contenido y marketing</span><h3 style="font-size:32px; line-height:1.2;">Variantes de mensajes, imágenes y traducciones</h3></div>
+      <div class="box rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:2"><span class="tag">Conocimiento interno</span><h3 style="font-size:32px; line-height:1.2;">Preguntarle a manuales, políticas y contratos</h3></div>
+      <div class="box rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:3"><span class="tag">Prototipos</span><h3 style="font-size:32px; line-height:1.2;">Probar una idea antes de invertir en construirla</h3></div>
+    </div>
+    <span class="pill mint">El patrón común: la IA hace el borrador, las personas deciden</span>
+  </div>
+</section>
+
+<!-- 14 · Sector público -->
+<section class="slide" data-title="Sector público">
+  <div class="frame">
+    <p class="eyebrow">Para el sector público</p>
+    <h2>Un Estado más <mark>cercano</mark> y más <mark>claro</mark></h2>
+    <div class="grid g2" style="margin-top:28px; flex:1; margin-bottom:24px;">
+      <div class="box mint rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:0"><span class="tag">Lenguaje claro</span><h3 style="font-size:32px; line-height:1.2;">Normas y trámites en palabras que todos entienden</h3></div>
+      <div class="box mint rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:1"><span class="tag">Atención ciudadana</span><h3 style="font-size:32px; line-height:1.2;">Requisitos y horarios, a cualquier hora</h3></div>
+      <div class="box mint rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:2"><span class="tag">Accesibilidad</span><h3 style="font-size:32px; line-height:1.2;">Lectura en voz alta, lectura fácil y traducción</h3></div>
+      <div class="box mint rise" style="justify-content:center; gap:12px; padding:26px 30px; --i:3"><span class="tag">Escuchar</span><h3 style="font-size:32px; line-height:1.2;">Resumir miles de comentarios de una consulta pública</h3></div>
+    </div>
+    <span class="pill blush">Aquí el error cuesta más: hay derechos de por medio</span>
+  </div>
+</section>
+
+<!-- 15 · Frase -->
+<section class="slide" data-title="La pregunta">
+  <div class="frame center mint">
+    <p class="quote rise" style="--i:0">Construir con IA ya es fácil.</p>
+    <p class="quote rise terra" style="--i:3; margin-top:12px;">Lo difícil es que la gente confíe en lo que construimos.</p>
+  </div>
+</section>
+
+<!-- 16 · Sección 3 -->
+<section class="slide" data-title="Parte 3">
+  <div class="frame flush">
+    <div class="split">
+      <div class="l">
+        <p class="big-n rise" style="--i:0">03</p>
+        <h2 class="rise" style="--i:1">Diseñar IA para <mark>personas</mark></h2>
+        <p class="lead rise" style="--i:2">Lo que Google PAIR investigó, y comparte gratis.</p>
+      </div>
+      <div class="r deep"><svg width="320" height="320" aria-hidden="true"><use href="#ill-stairs"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · PAIR -->
+<section class="slide" data-title="Google PAIR">
+  <div class="frame">
+    <p class="eyebrow">People + AI Research</p>
+    <div class="cols">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <h2>El lado <mark>humano</mark> de la IA</h2>
+        <p class="lead">Un equipo multidisciplinario de Google que investiga cómo vivimos la IA y crea herramientas y guías de diseño.</p>
+        <p class="lead">Su idea central: la IA se construye <b style="color:var(--ink);">con</b> las comunidades a las que afecta.</p>
+      </div>
+      <div class="shot rise" style="--i:1"><img src="assets/pair-home.jpg" alt="Portada del People + AI Guidebook"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 17b · Por qué importa -->
+<section class="slide" data-title="Por qué importa">
+  <div class="frame">
+    <p class="eyebrow">Por qué importa</p>
+    <h2>La IA Generativa <mark>se va a equivocar</mark>. La pregunta es qué pasa entonces.</h2>
+    <p class="lead" style="margin-top:14px;">Según PAIR, como estos sistemas trabajan con probabilidades, en algún momento darán una respuesta incorrecta o inesperada. El diseño decide si la gente lo nota a tiempo.</p>
+    <div class="grid g3" style="margin-top:30px; flex:1; margin-bottom:8px;">
+      <div class="box blush" data-step><span class="tag">Sobreconfianza</span><h3 style="font-size:30px;">Se cree todo</h3><p class="t">Un ciudadano sigue un requisito que la IA inventó.</p></div>
+      <div class="box sand" data-step><span class="tag">Desconfianza</span><h3 style="font-size:30px;">No se usa</h3><p class="t">La empresa invierte en IA y sus equipos la ignoran.</p></div>
+      <div class="box mint" data-step><span class="tag">Confianza calibrada</span><h3 style="font-size:30px;">Se usa con criterio</h3><p class="t">La gente sabe cuándo creerle y cuándo revisar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 · Guidebook -->
+<section class="slide" data-title="El Guidebook">
+  <div class="frame">
+    <p class="eyebrow">pair.withgoogle.com/guidebook</p>
+    <h2>El People + AI <mark>Guidebook</mark></h2>
+    <p class="lead" style="margin-top:10px; max-width:760px;">Una guía práctica, gratuita y viva para crear productos con IA centrados en las personas. Su edición más reciente se enfoca en IA Generativa.</p>
+    <div class="grid g4" style="margin-top:32px; flex:1; margin-bottom:28px;">
+      <div class="box rise" style="justify-content:space-between; padding:28px; --i:0"><p style="font-size:110px; font-weight:500; line-height:1; letter-spacing:-3px; color:var(--green);">6</p><p class="t" style="font-size:23px; color:var(--ink);">capítulos con preguntas clave</p></div>
+      <div class="box rise" style="justify-content:space-between; padding:28px; --i:1"><p style="font-size:110px; font-weight:500; line-height:1; letter-spacing:-3px; color:var(--green);">5</p><p class="t" style="font-size:23px; color:var(--ink);">principios de producto</p></div>
+      <div class="box rise" style="justify-content:space-between; padding:28px; --i:2"><p style="font-size:110px; font-weight:500; line-height:1; letter-spacing:-3px; color:var(--green);">23</p><p class="t" style="font-size:23px; color:var(--ink);">patrones de diseño</p></div>
+      <div class="box mint rise" style="justify-content:space-between; padding:28px; --i:3"><p style="font-size:110px; font-weight:500; line-height:1; letter-spacing:-3px; color:var(--green);">+</p><p class="t" style="font-size:23px; color:var(--ink);">talleres, casos de estudio y glosario</p></div>
+    </div>
+    <p class="sub" style="margin-top:auto; font-size:16px;">Creative Commons BY-NC-SA 4.0 · tercera edición, abril 2025</p>
+  </div>
+</section>
+
+<!-- 18b · Recorrido Guidebook -->
+<section class="slide" data-title="Recorrido por la guía">
+  <div class="frame">
+    <p class="eyebrow">Video · Recorrido real por pair.withgoogle.com/guidebook</p>
+    <div class="cols" style="grid-template-columns: 4fr 7fr; gap:40px;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <h2 style="font-size:42px;">Así se <mark>usa</mark> la guía</h2>
+        <ol class="cues" data-for="tour">
+          <li data-t="0"><b>Qué es</b><span>Una guía viva y gratuita</span></li>
+          <li data-t="4.2"><b>Capítulos</b><span>Preguntas por etapa del producto</span></li>
+          <li data-t="6.2"><b>Principios</b><span>La brújula del equipo</span></li>
+          <li data-t="8.2"><b>23 patrones</b><span>Soluciones a problemas comunes</span></li>
+          <li data-t="17"><b>Haz / Evita</b><span>Cada patrón con ejemplos</span></li>
+        </ol>
+      </div>
+      <div class="video" data-video="assets/pair-guidebook-tour.mp4" data-cues="tour">
+        <video muted loop playsinline preload="auto" poster="assets/pair-guidebook-tour.jpg"></video>
+        <img class="still" src="assets/pair-guidebook-tour.jpg" alt="Recorrido por el People + AI Guidebook">
+        <span class="cap">Grabación real · pair.withgoogle.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 · Capítulos -->
+<section class="slide" data-title="Capítulos">
+  <div class="frame">
+    <p class="eyebrow">Los 6 capítulos, en preguntas</p>
+    <h2>Preguntas que <mark>cualquier equipo</mark> puede hacerse</h2>
+    <div class="grid g3" style="margin-top:22px; flex:1;">
+      <div class="box" data-step><span class="tag">01 · User Needs</span><h3>¿Qué problema real resolvemos, y la IA sí aporta?</h3></div>
+      <div class="box" data-step><span class="tag">02 · Data + Model</span><h3>¿Con qué datos aprende y cómo mejora?</h3></div>
+      <div class="box" data-step><span class="tag">03 · Mental Models</span><h3>¿Qué cree la gente que hace la IA?</h3></div>
+      <div class="box mint" data-step><span class="tag">04 · Trust</span><h3>¿Cómo explicamos lo que hace, y cuándo dudar?</h3></div>
+      <div class="box" data-step><span class="tag">05 · Feedback + Controls</span><h3>¿Cómo puede la gente corregirla?</h3></div>
+      <div class="box blush" data-step><span class="tag">06 · Errors</span><h3>¿Qué pasa cuando se equivoca?</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 · Principios -->
+<section class="slide" data-title="Principios">
+  <div class="frame">
+    <p class="eyebrow">5 principios</p>
+    <div class="cols" style="grid-template-columns: 6fr 5fr;">
+      <div class="shot"><img src="assets/pair-principles.jpg" alt="Principios del Guidebook: User autonomy, Data and model alignment, Evolving safety, Adapt with feedback"></div>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <h2 style="font-size:40px;">Traducidos a lo <mark>cotidiano</mark></h2>
+        <p data-step><b>Autonomía:</b> la persona decide cuánto delega.</p>
+        <p data-step><b>Alineación:</b> que la IA refleje el mundo real.</p>
+        <p data-step><b>Seguridad viva:</b> no termina al lanzar.</p>
+        <p data-step><b>Feedback:</b> escuchar y mejorar.</p>
+        <p data-step><b>IA útil:</b> que mejore el trabajo y el juego.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20b · Un patrón de cerca -->
+<section class="slide" data-title="Un patrón de cerca">
+  <div class="frame">
+    <p class="eyebrow">Un patrón de cerca · Set the right expectations</p>
+    <h2>Fijar las <mark>expectativas correctas</mark></h2>
+    <p class="lead" style="margin-top:10px;">Ser transparente sobre lo que el producto con IA puede y no puede hacer.</p>
+    <div class="grid g2" style="margin-top:28px; flex:1;">
+      <div class="box mint" data-step>
+        <span class="tag">Haz · según PAIR</span>
+        <h3 style="font-size:32px;">Aclara los límites de la IA, sobre todo cuando hay mucho en juego</h3>
+        <p class="t" style="margin-top:14px; padding-top:18px; font-size:21px; border-top:1px solid #CFE5DA;"><b>En el Estado:</b> “Este asistente orienta sobre requisitos. La decisión final la toma un funcionario.”</p>
+      </div>
+      <div class="box blush" data-step>
+        <span class="tag">Evita · según PAIR</span>
+        <h3 style="font-size:32px;">Sugerir que la tecnología funciona perfecto cuando aún no es confiable</h3>
+        <p class="t" style="margin-top:14px; padding-top:18px; font-size:21px; border-top:1px solid #EBCFC5;"><b>En una empresa:</b> “Nuestro asistente nunca se equivoca y responde todo sobre tu contrato.”</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20c · Patrones en Gemini -->
+<section class="slide" data-title="Patrones en una app real">
+  <div class="frame">
+    <p class="eyebrow">Video · Los patrones de PAIR en una app real</p>
+    <div class="cols" style="grid-template-columns: 4fr 7fr; gap:40px;">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <h2 style="font-size:40px;">Lo que ves en Gemini <mark>no es casualidad</mark></h2>
+        <ol class="cues" data-for="gemini">
+          <li data-t="0"><b>Fijar expectativas</b><span>“Gemini is AI and can make mistakes”</span></li>
+          <li data-t="2.5"><b>Supervisar la automatización</b><span>Botón para detener la respuesta</span></li>
+          <li data-t="7"><b>Explorar sin miedo</b><span>Rehacer: acciones reversibles</span></li>
+          <li data-t="9.5"><b>Dar feedback</b><span>Reportar un problema</span></li>
+          <li data-t="12"><b>Explicar lo justo</b><span>Detalles de la respuesta</span></li>
+        </ol>
+      </div>
+      <div class="video" data-video="assets/pair-patrones-gemini.mp4" data-cues="gemini">
+        <video muted loop playsinline preload="auto" poster="assets/pair-patrones-gemini.jpg"></video>
+        <img class="still" src="assets/pair-patrones-gemini.jpg" alt="Gemini mostrando patrones de diseño centrado en personas">
+        <span class="cap">Grabación real · gemini.google.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21b · Para quién -->
+<section class="slide" data-title="Para quién">
+  <div class="frame">
+    <p class="eyebrow">Para cualquiera que use o cree con IA</p>
+    <h2>Cómo aprovecha cada quien <mark>este enfoque</mark></h2>
+    <div class="grid g3" style="margin-top:26px; flex:1;">
+      <div class="box" data-step><span class="tag">Usuario final</span><h3>Exige que la app diga qué hace y deja corregirla</h3></div>
+      <div class="box" data-step><span class="tag">Estudiantes</span><h3>Usa la IA para entender, verifica las fuentes y cita</h3></div>
+      <div class="box" data-step><span class="tag">Creadores de contenido</span><h3>Revisa, edita y declara cuándo una pieza usa IA</h3></div>
+      <div class="box mint" data-step><span class="tag">Empresas</span><h3>Aplica los patrones antes de lanzar un asistente</h3></div>
+      <div class="box mint" data-step><span class="tag">Estado</span><h3>Exige explicación, persona responsable y apelación</h3></div>
+      <div class="box sand" data-step><span class="tag">Equipos de producto</span><h3>Usa los talleres para decidir juntos negocio y tecnología</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 · Cómo usarla -->
+<section class="slide" data-title="Cómo usarla">
+  <div class="frame center">
+    <h2 class="c">Tres formas de llevar la guía a tu <mark>organización</mark></h2>
+    <div class="timeline" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="item" data-step><div class="dot sand">1</div><span class="k">Taller</span><h3>Una tarde con un equipo mixto</h3><p>Negocio, legal, atención y tecnología con los talleres del Guidebook</p></div>
+      <div class="item" data-step><div class="dot sky">2</div><span class="k">Checklist</span><h3>Antes de lanzar</h3><p>Los capítulos como preguntas obligatorias</p></div>
+      <div class="item" data-step><div class="dot">3</div><span class="k">Lenguaje común</span><h3>Patrones compartidos</h3><p>Para que diseño, negocio y tecnología hablen de lo mismo</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 · Otras guías -->
+<section class="slide" data-title="Otras guías">
+  <div class="frame">
+    <p class="eyebrow">No es la única</p>
+    <h2>Otras guías para una IA <mark>confiable</mark></h2>
+    <div class="rows">
+      <div class="row"><span>Recurso</span><span>De</span><span>Útil para</span></div>
+      <div class="row"><b>People + AI Guidebook</b><span class="who">Google PAIR</span><span>Diseñar productos centrados en personas</span></div>
+      <div class="row"><b>HAX Toolkit</b><span class="who">Microsoft</span><span>18 pautas de interacción persona–IA</span></div>
+      <div class="row"><b>The Shape of AI</b><span class="who">Comunidad</span><span>Catálogo de patrones de interfaz con IA</span></div>
+      <div class="row"><b>AI Risk Management Framework</b><span class="who">NIST</span><span>Gestionar riesgos en sectores regulados</span></div>
+      <div class="row"><b>Ética de la IA</b><span class="who">UNESCO</span><span>Política pública y gobiernos</span></div>
+      <div class="row"><b>Principios de IA</b><span class="who">OCDE</span><span>Gobernanza para países y empresas</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 24 · Sección 4 -->
+<section class="slide" data-title="Parte 4">
+  <div class="frame flush">
+    <div class="split">
+      <div class="l">
+        <p class="big-n rise" style="--i:0">04</p>
+        <h2 class="rise" style="--i:1">Pongámoslo a <mark>prueba</mark></h2>
+        <p class="lead rise" style="--i:2">Tú decides: ¿esta IA merece confianza?</p>
+      </div>
+      <div class="r mint"><svg width="320" height="320" aria-hidden="true"><use href="#ill-hands"/></svg></div>
+    </div>
+  </div>
+</section>
+
+<!-- 25 · Semáforo -->
+<section class="slide" data-title="Semáforo">
+  <div class="frame">
+    <p class="eyebrow">Interactivo · El semáforo</p>
+    <h2>¿Verde, amarillo o rojo? <mark>Vota</mark></h2>
+    <div class="grid g3" style="margin-top:22px; flex:1;">
+      <div class="box"><span class="tag">Caso 1</span><h3>Un chatbot municipal responde horarios y requisitos</h3>
+        <span class="pill mint" data-step style="margin-top:18px;">Verde · bajo riesgo</span>
+        <p class="t" data-step>Que diga que es IA y ofrezca hablar con una persona.</p></div>
+      <div class="box"><span class="tag">Caso 2</span><h3>La IA redacta la respuesta a un reclamo y alguien la revisa</h3>
+        <span class="pill sand" data-step style="margin-top:18px;">Amarillo · con revisión</span>
+        <p class="t" data-step>La IA ayuda, no reemplaza. Revisar siempre.</p></div>
+      <div class="box"><span class="tag">Caso 3</span><h3>Una IA decide sola quién recibe un subsidio</h3>
+        <span class="pill blush" data-step style="margin-top:18px;">Rojo · alto impacto</span>
+        <p class="t" data-step>Necesita una persona, una explicación y cómo apelar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 26 · Confianza calibrada -->
+<section class="slide" data-title="Confianza calibrada">
+  <div class="frame center">
+    <p class="eyebrow" style="text-align:center;">La idea más importante</p>
+    <h2 class="c">Confianza <mark>calibrada</mark></h2>
+    <p class="lead" style="text-align:center; max-width:680px; margin:12px auto 0;">Ni desconfianza total ni fe ciega: que la gente sepa cuándo creerle a la IA y cuándo revisar.</p>
+    <div class="spectrum"><span class="knob"></span></div>
+    <div class="ends">
+      <div data-step><h3>No confían</h3><p style="font-size:19px; color:var(--soft);">No la usan y pierden su valor</p></div>
+      <div data-step><h3 style="color:var(--green);">Confianza calibrada</h3><p style="font-size:19px; color:var(--soft);">Saben qué hace bien y qué no</p></div>
+      <div data-step><h3>Confían a ciegas</h3><p style="font-size:19px; color:var(--soft);">No ven sus errores</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 27 · Checklist -->
+<section class="slide" data-title="5 preguntas">
+  <div class="frame">
+    <p class="eyebrow">Para llevar · Toma foto</p>
+    <h2>5 preguntas antes de lanzar algo con <mark>IA</mark></h2>
+    <div class="steps" style="margin-top:24px; gap:14px;">
+      <div class="step" data-step><div class="dot sand">1</div><p style="font-size:26px;">¿Qué necesidad real de las personas resuelve?</p></div>
+      <div class="step" data-step><div class="dot sky">2</div><p style="font-size:26px;">¿Saben que hablan con una IA y qué puede (y no) hacer?</p></div>
+      <div class="step" data-step><div class="dot">3</div><p style="font-size:26px;">¿Pueden corregirla, deshacer o pedir una persona?</p></div>
+      <div class="step" data-step><div class="dot blush">4</div><p style="font-size:26px;">¿Qué pasa cuando se equivoca, y quién responde?</p></div>
+      <div class="step" data-step><div class="dot mint">5</div><p style="font-size:26px;">¿Cómo vamos a escuchar y mejorar después?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 28 · Gracias -->
+<section class="slide" data-title="Gracias">
+  <div class="frame flush">
+    <div class="split">
+      <div class="l">
+        <p class="eyebrow rise" style="--i:0">Gracias, explain.la</p>
+        <h2 class="rise" style="--i:1; font-size:40px;">La IA no reemplaza el criterio humano. <mark>Lo necesita.</mark></h2>
+        <div class="rise" style="--i:2; display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+          <span class="pill mint">pair.withgoogle.com/guidebook</span>
+          <span class="pill">vanessamarely.dev</span>
+          <span class="pill">linkedin.com/in/vanessa-marely-aristizabal-angel</span>
+        </div>
+      </div>
+      <div class="r"><svg width="320" height="320" aria-hidden="true"><use href="#ill-orbit"/></svg></div>
+    </div>
+  </div>
+</section>
+
+</div>
+<p class="pageno" id="pageno" style="position:fixed;"></p>
+<div class="hud" id="hud">
+  <button type="button" id="b-prev" aria-label="Anterior">←</button>
+  <button type="button" id="b-next" aria-label="Siguiente">→</button>
+  <button type="button" id="b-full">Pantalla completa</button>
+</div>
+</div>
+<div class="blackout" id="blackout"></div>
+<div class="hint" id="hint">→ / clicker para avanzar · F pantalla completa · B pantalla negra</div>
+
+<script>
+(function () {
+  const deck = document.getElementById('deck');
+  const stage = document.getElementById('stage');
+  const slides = Array.from(deck.querySelectorAll('.slide'));
+  const pageno = document.getElementById('pageno');
+  const blackout = document.getElementById('blackout');
+  const n = slides.length;
+  let i = 0, s = 0;
+
+  // footer with speaker site + page number on every slide
+  slides.forEach((sl, k) => {
+    if (sl.querySelector('.split')) sl.classList.add('dark-slide');
+    const f = document.createElement('div');
+    f.className = 'foot';
+    f.innerHTML = '<span><b>Del modelo a la confianza</b> · explain.la 2026</span>' +
+      '<span><b>Vanessa Aristizabal</b> · vanessamarely.dev · in/vanessa-marely-aristizabal-angel · ' + String(k + 1).padStart(2, '0') + '/' + n + '</span>';
+    sl.appendChild(f);
+  });
+  pageno.remove();
+
+  const stepsOf = (sl) => Array.from(sl.querySelectorAll('[data-step]'));
+
+  // videos: attach source, reveal when it loads; placeholder stays if the file is missing
+  document.querySelectorAll('.video[data-video]').forEach((box) => {
+    const v = box.querySelector('video');
+    v.addEventListener('loadeddata', () => box.classList.add('ready'));
+    v.src = box.getAttribute('data-video');
+    const key = box.getAttribute('data-cues');
+    if (key) {
+      const items = Array.from(document.querySelectorAll('.cues[data-for="' + key + '"] li'));
+      const times = items.map((li) => parseFloat(li.getAttribute('data-t')));
+      v.addEventListener('timeupdate', () => {
+        let k = 0;
+        times.forEach((t, j) => { if (v.currentTime >= t) k = j; });
+        items.forEach((li, j) => li.classList.toggle('on', j === k));
+      });
+      if (items[0]) items[0].classList.add('on');
+    }
+  });
+
+  function fit() {
+    const k = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    deck.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+  }
+
+  function render() {
+    slides.forEach((sl, k) => {
+      const on = k === i;
+      sl.classList.toggle('active', on);
+      sl.querySelectorAll('video').forEach((v) => {
+        if (on) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else { v.pause(); }
+      });
+    });
+    stepsOf(slides[i]).forEach((el, k) => el.classList.toggle('shown', k < s));
+    document.title = 'Del modelo a la confianza · ' + (i + 1) + '/' + n;
+    try { localStorage.setItem('genai-slide', String(i)); } catch (e) {}
+  }
+
+  function next() {
+    const st = stepsOf(slides[i]);
+    if (s < st.length) s++;
+    else if (i < n - 1) { i++; s = 0; }
+    render();
+  }
+  function prev() {
+    if (s > 0) s--;
+    else if (i > 0) { i--; s = stepsOf(slides[i]).length; }
+    render();
+  }
+  function go(k) { i = Math.max(0, Math.min(n - 1, k)); s = 0; render(); }
+
+  function toggleFull() {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else { const p = document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(() => {}); }
+    } catch (e) {}
+  }
+
+  let typed = '';
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const k = e.key;
+    hideHint();
+    if (blackout.classList.contains('on') && !['b', 'B', '.'].includes(k)) { blackout.classList.remove('on'); return; }
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter', 'n', 'N'].includes(k)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace', 'p', 'P'].includes(k)) { e.preventDefault(); prev(); }
+    else if (k === 'Home') go(0);
+    else if (k === 'End') go(n - 1);
+    else if (k === 'f' || k === 'F' || k === 'F5') { e.preventDefault(); toggleFull(); }
+    else if (k === 'b' || k === 'B' || k === '.') blackout.classList.toggle('on');
+    else if (/^[0-9]$/.test(k)) { typed += k; clearTimeout(window.__t); window.__t = setTimeout(() => { go(parseInt(typed, 10) - 1); typed = ''; }, 600); }
+  });
+
+  stage.addEventListener('click', (e) => { if (e.target.closest('.hud')) return; hideHint(); next(); });
+  document.getElementById('b-prev').addEventListener('click', (e) => { e.stopPropagation(); prev(); });
+  document.getElementById('b-next').addEventListener('click', (e) => { e.stopPropagation(); next(); });
+  document.getElementById('b-full').addEventListener('click', (e) => { e.stopPropagation(); toggleFull(); });
+
+  let idle;
+  stage.addEventListener('mousemove', () => {
+    stage.classList.add('pointer');
+    clearTimeout(idle);
+    idle = setTimeout(() => stage.classList.remove('pointer'), 1800);
+  });
+
+  const hint = document.getElementById('hint');
+  function hideHint() { hint.classList.add('gone'); }
+  setTimeout(hideHint, 5000);
+
+  window.addEventListener('resize', fit);
+  fit();
+  try { const saved = parseInt(localStorage.getItem('genai-slide') || '0', 10); if (saved > 0 && saved < n) i = saved; } catch (e) {}
+  render();
+})();
+</script>
+
+</html>
